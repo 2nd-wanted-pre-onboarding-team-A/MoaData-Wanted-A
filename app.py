@@ -43,21 +43,18 @@ class JobUpdateDeleteView(Resource):
     """
     def put(self, pk):
         data = request.get_json()
-        job_id = data['job_id']
-        job = Job.objects(job_id=job_id).first()
+        job = Job.objects(job_id=pk).first()
         if job is None:
-            return Response(f"job_id={job_id}에 해당하는 job이 없습니다.", status=400)
+            return Response(f"job_id={pk}에 해당하는 job이 없습니다.", status=400)
         job.update(**data)
-        return Response(f"job_id={job_id}가 업데이트되었습니다.", status=200)
+        return Response(f"job_id={pk}가 업데이트되었습니다.", status=200)
 
     def delete(self, pk):
-        data = request.get_json()
-        job_id = data['job_id']
-        job = Job.objects(job_id=job_id).first()
+        job = Job.objects(job_id=pk).first()
         if job is None:
-            return Response(f"job_id={job_id}에 해당하는 job이 없습니다.", status=400)
+            return Response(f"job_id={pk}에 해당하는 job이 없습니다.", status=400)
         job.delete()
-        return Response(f"job_id={job_id}데이터 삭제 완료.")
+        return Response(f"job_id={pk}데이터 삭제 완료.")
         
 
 if __name__ == "__main__":
