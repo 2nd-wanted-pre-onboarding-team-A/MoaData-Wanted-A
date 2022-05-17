@@ -50,6 +50,7 @@ class JobCreatView(Resource):
 class JobRetrieveUpdateDeleteView(Resource):
     """
     작성자: 윤상민
+    
     [GET] Retrieve Job
     [PUT] Update Job
     [DELETE] Delete Job
