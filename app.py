@@ -20,6 +20,7 @@ class Job(Document):
     task_list = DictField()
     property = DictField()
 
+
 @api.route('/api/v1/jobs')
 class JobCreatView(Resource):
     """
@@ -50,7 +51,7 @@ class JobCreatView(Resource):
 class JobRetrieveUpdateDeleteView(Resource):
     """
     작성자: 윤상민
-    
+
     [GET] Retrieve Job
     [PUT] Update Job
     [DELETE] Delete Job
@@ -73,6 +74,7 @@ class JobRetrieveUpdateDeleteView(Resource):
             return Response(f"Bad Request. job_id={pk} Not Found", status=404)
         job.delete()
         return Response(f"job_id={pk} deleted OK")
+
 
 @api.route('/api/v1/jobs/<int:pk>/run')
 class JobTaskView(Resource):
