@@ -4,6 +4,8 @@ from flask import request, Response
 from flask_restx import Api, Resource  # Api 구현을 위한 Api 객체 import
 from mongoengine import *
 
+from job import JobExecutor
+
 app = Flask(__name__)  # Flask 객체 선언, 파라미터로 어플리케이션 패키지의 이름을 넣어줌.
 api = Api(app)  # Flask 객체에 Api 객체 등록
 connect('moa')  # MongoDB Connector
@@ -55,6 +57,19 @@ class JobUpdateDeleteView(Resource):
             return Response(f"job_id={pk}에 해당하는 job이 없습니다.", status=400)
         job.delete()
         return Response(f"job_id={pk}데이터 삭제 완료.")
+
+@api.route('/api/v1/jobs/<int:pk>/run')
+class JobTaskView(Resource):
+    """
+    [GET] Run Job
+    """
+    def get(self, pk):
+        job = Job.objects(job_id=pk).first()
+        if job is None:
+            return Response(f"job_id={pk}에 해당하는 job이 없습니다.", status=400)
+        executor = JobExecutor()
+        executor.run(job)
+        return Response(f"job_id={pk}에 대한 작업이 완료되었습니다.", status=200)
         
 
 if __name__ == "__main__":
