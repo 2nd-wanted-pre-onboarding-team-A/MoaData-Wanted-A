@@ -20,14 +20,10 @@ class Job(Document):
 
 
 @api.route('/api/v1/jobs')
-class JobCreatUpdateDelete(Resource):
+class JobCreatView(Resource):
     """
     Create, Update, Delete
     """
-    def get(self):
-        a = 1
-        pass
-
     def post(self):
         data = request.get_json()
         job_id = data['job_id']
@@ -38,7 +34,10 @@ class JobCreatUpdateDelete(Resource):
             return Response("입력조건 에러", status=400)
         return Response(f"job_id={job_id}의 데이터가 생성되었습니다.", status=201)
 
-    def put(self):
+
+@api.route('/api/v1/jobs/<int:pk>')
+class JobUpdateDeleteView(Resource):
+    def put(self, pk):
         data = request.get_json()
         job_id = data['job_id']
         job = Job.objects(job_id=job_id).first()
@@ -47,7 +46,7 @@ class JobCreatUpdateDelete(Resource):
         job.update(**data)
         return Response(f"job_id={job_id}가 업데이트되었습니다.", status=200)
 
-    def delete(self):
+    def delete(self, pk):
         data = request.get_json()
         job_id = data['job_id']
         job = Job.objects(job_id=job_id).first()
