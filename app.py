@@ -20,13 +20,19 @@ class Job(Document):
     task_list = DictField()
     property = DictField()
 
+
 @api.route('/api/v1/jobs')
 class JobCreatView(Resource):
     """
     작성자: 윤상민
     
+    [GET] List Jobs
     [POST] Create Job
     """
+    def get(self):
+        jobs_json = Job.objects.to_json()
+        return Response(f"{jobs_json}", status=200)
+
     def post(self):
         data = request.get_json()
         job_id = data['job_id']
@@ -42,19 +48,27 @@ class JobCreatView(Resource):
 
 
 @api.route('/api/v1/jobs/<int:pk>')
-class JobUpdateDeleteView(Resource):
+class JobRetrieveUpdateDeleteView(Resource):
     """
     작성자: 윤상민
 
+    [GET] Retrieve Job
     [PUT] Update Job
     [DELETE] Delete Job
     """
+    def get(self, pk):
+        job_json = Job.objects(job_id=pk).to_json()
+        return Response(f"{job_json}", status=200)
+
     def put(self, pk):
         data = request.get_json()
         job = Job.objects(job_id=pk).first()
         if job is None:
             return Response(f"Bad Request. job_id={pk} Not Found", status=404)
-        job.update(**data)
+        try:
+            job.update(**data)
+        except:
+            return Response("Bad Request.", status=400)
         return Response(f"job_id={pk} Updated OK", status=200)
 
     def delete(self, pk):
@@ -63,6 +77,7 @@ class JobUpdateDeleteView(Resource):
             return Response(f"Bad Request. job_id={pk} Not Found", status=404)
         job.delete()
         return Response(f"job_id={pk} deleted OK")
+
 
 @api.route('/api/v1/jobs/<int:pk>/run')
 class JobTaskView(Resource):
