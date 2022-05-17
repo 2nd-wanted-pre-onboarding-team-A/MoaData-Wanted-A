@@ -20,26 +20,32 @@ class Job(Document):
     task_list = DictField()
     property = DictField()
 
-
 @api.route('/api/v1/jobs')
 class JobCreatView(Resource):
     """
+    작성자: 윤상민
+    
     [POST] Create Job
     """
     def post(self):
         data = request.get_json()
         job_id = data['job_id']
+        job = Job.objects(job_id=job_id).first()
+        job_last = Job.objects.order_by('-job_id').first()
+        if job is not None:
+            return Response(f"job_id={job_id} is exist. {job_last['job_id']+1} or higher is recommended", status=400)
         try:
             Job(**data).save()
         except:
-            # 몽고 ORM에서 뿜뿜하는 Validation조건을 아래에서 Raise할 수 있으면 좋겠음. 
-            return Response("입력조건 에러", status=400)
-        return Response(f"job_id={job_id}의 데이터가 생성되었습니다.", status=201)
+            return Response("Bad Request", status=400)
+        return Response(f"job_id={job_id} created OK", status=201)
 
 
 @api.route('/api/v1/jobs/<int:pk>')
 class JobUpdateDeleteView(Resource):
     """
+    작성자: 윤상민
+
     [PUT] Update Job
     [DELETE] Delete Job
     """
@@ -47,29 +53,31 @@ class JobUpdateDeleteView(Resource):
         data = request.get_json()
         job = Job.objects(job_id=pk).first()
         if job is None:
-            return Response(f"job_id={pk}에 해당하는 job이 없습니다.", status=400)
+            return Response(f"Bad Request. job_id={pk} Not Found", status=404)
         job.update(**data)
-        return Response(f"job_id={pk}가 업데이트되었습니다.", status=200)
+        return Response(f"job_id={pk} Updated OK", status=200)
 
     def delete(self, pk):
         job = Job.objects(job_id=pk).first()
         if job is None:
-            return Response(f"job_id={pk}에 해당하는 job이 없습니다.", status=400)
+            return Response(f"Bad Request. job_id={pk} Not Found", status=404)
         job.delete()
-        return Response(f"job_id={pk}데이터 삭제 완료.")
+        return Response(f"job_id={pk} deleted OK")
 
 @api.route('/api/v1/jobs/<int:pk>/run')
 class JobTaskView(Resource):
     """
+    작성자: 양수영
+    
     [GET] Run Job
     """
     def get(self, pk):
         job = Job.objects(job_id=pk).first()
         if job is None:
-            return Response(f"job_id={pk}에 해당하는 job이 없습니다.", status=400)
+            return Response(f"Bad Request. job_id={pk} Not Found", status=404)
         executor = JobExecutor()
         executor.run(job)
-        return Response(f"job_id={pk}에 대한 작업이 완료되었습니다.", status=200)
+        return Response(f"job_id={pk} run task Success", status=200)
         
 
 if __name__ == "__main__":
