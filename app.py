@@ -20,44 +20,45 @@ class Job(Document):
 
 
 @api.route('/api/v1/jobs')
-class JobCreatView(Resource):
+class JobCreatUpdateDeleteView(Resource):
     """
+    작성자: 윤상민
+
     [POST] Create Job
+    [PUT] Update Job
+    [DELETE] Delete Job
+    url의 pk를 사용하지 않고 입력값의 unique한 job_id로 자료를 컨트롤하기 때문에 CUD url을 한 곳에 두었습니다.
     """
     def post(self):
         data = request.get_json()
         job_id = data['job_id']
+        job = Job.objects(job_id=job_id).first()
+        job_last = Job.objects.order_by('-job_id').first()
+        if job is not None:
+            return Response(f"job_id={job_id} is exist. {job_last['job_id']+1} or higher is recommended", status=400)
         try:
             Job(**data).save()
         except:
-            # 몽고 ORM에서 뿜뿜하는 Validation조건을 아래에서 Raise할 수 있으면 좋겠음. 
-            return Response("입력조건 에러", status=400)
+            return Response("Bad Request", status=400)
         return Response(f"job_id={job_id}의 데이터가 생성되었습니다.", status=201)
 
-
-@api.route('/api/v1/jobs/<int:pk>')
-class JobUpdateDeleteView(Resource):
-    """
-    [PUT] Update Job
-    [DELETE] Delete Job
-    """
     def put(self, pk):
         data = request.get_json()
         job_id = data['job_id']
         job = Job.objects(job_id=job_id).first()
         if job is None:
-            return Response(f"job_id={job_id}에 해당하는 job이 없습니다.", status=400)
+            return Response(f"Bad Request. job_id={job_id} Not Found", status=404)
         job.update(**data)
-        return Response(f"job_id={job_id}가 업데이트되었습니다.", status=200)
+        return Response(f"job_id={job_id} Updated", status=200)
 
     def delete(self, pk):
         data = request.get_json()
         job_id = data['job_id']
         job = Job.objects(job_id=job_id).first()
         if job is None:
-            return Response(f"job_id={job_id}에 해당하는 job이 없습니다.", status=400)
+            return Response(f"Bad Request. job_id={job_id} Not Found", status=404)
         job.delete()
-        return Response(f"job_id={job_id}데이터 삭제 완료.")
+        return Response(f"job_id={job_id} Deleted", status=200)
         
 
 if __name__ == "__main__":
