@@ -4,6 +4,8 @@ from flask import request, Response
 from flask_restx import Api, Resource  # Api 구현을 위한 Api 객체 import
 from mongoengine import *
 
+from job import JobExecutor
+
 app = Flask(__name__)  # Flask 객체 선언, 파라미터로 어플리케이션 패키지의 이름을 넣어줌.
 api = Api(app)  # Flask 객체에 Api 객체 등록
 connect('moa')  # MongoDB Connector
@@ -18,16 +20,12 @@ class Job(Document):
     task_list = DictField()
     property = DictField()
 
-
 @api.route('/api/v1/jobs')
-class JobCreatUpdateDeleteView(Resource):
+class JobCreatView(Resource):
     """
     작성자: 윤상민
-
+    
     [POST] Create Job
-    [PUT] Update Job
-    [DELETE] Delete Job
-    url의 pk를 사용하지 않고 입력값의 unique한 job_id로 자료를 컨트롤하기 때문에 CUD url을 한 곳에 두었습니다.
     """
     def post(self):
         data = request.get_json()
@@ -40,25 +38,46 @@ class JobCreatUpdateDeleteView(Resource):
             Job(**data).save()
         except:
             return Response("Bad Request", status=400)
-        return Response(f"job_id={job_id}의 데이터가 생성되었습니다.", status=201)
+        return Response(f"job_id={job_id} created OK", status=201)
 
+
+@api.route('/api/v1/jobs/<int:pk>')
+class JobUpdateDeleteView(Resource):
+    """
+    작성자: 윤상민
+
+    [PUT] Update Job
+    [DELETE] Delete Job
+    """
     def put(self, pk):
         data = request.get_json()
-        job_id = data['job_id']
-        job = Job.objects(job_id=job_id).first()
+        job = Job.objects(job_id=pk).first()
         if job is None:
-            return Response(f"Bad Request. job_id={job_id} Not Found", status=404)
+            return Response(f"Bad Request. job_id={pk} Not Found", status=404)
         job.update(**data)
-        return Response(f"job_id={job_id} Updated", status=200)
+        return Response(f"job_id={pk} Updated OK", status=200)
 
     def delete(self, pk):
-        data = request.get_json()
-        job_id = data['job_id']
-        job = Job.objects(job_id=job_id).first()
+        job = Job.objects(job_id=pk).first()
         if job is None:
-            return Response(f"Bad Request. job_id={job_id} Not Found", status=404)
+            return Response(f"Bad Request. job_id={pk} Not Found", status=404)
         job.delete()
-        return Response(f"job_id={job_id} Deleted", status=200)
+        return Response(f"job_id={pk} deleted OK")
+
+@api.route('/api/v1/jobs/<int:pk>/run')
+class JobTaskView(Resource):
+    """
+    작성자: 양수영
+    
+    [GET] Run Job
+    """
+    def get(self, pk):
+        job = Job.objects(job_id=pk).first()
+        if job is None:
+            return Response(f"Bad Request. job_id={pk} Not Found", status=404)
+        executor = JobExecutor()
+        executor.run(job)
+        return Response(f"job_id={pk} run task Success", status=200)
         
 
 if __name__ == "__main__":
