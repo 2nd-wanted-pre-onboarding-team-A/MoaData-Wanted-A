@@ -65,7 +65,10 @@ class JobRetrieveUpdateDeleteView(Resource):
         job = Job.objects(job_id=pk).first()
         if job is None:
             return Response(f"Bad Request. job_id={pk} Not Found", status=404)
-        job.update(**data)
+        try:
+            job.update(**data)
+        except:
+            return Response("Bad Request.", status=400)
         return Response(f"job_id={pk} Updated OK", status=200)
 
     def delete(self, pk):
