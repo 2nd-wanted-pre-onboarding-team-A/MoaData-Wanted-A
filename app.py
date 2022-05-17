@@ -25,8 +25,13 @@ class JobCreatView(Resource):
     """
     작성자: 윤상민
     
+    [GET] List Jobs
     [POST] Create Job
     """
+    def get(self):
+        jobs_json = Job.objects.to_json()
+        return Response(f"{jobs_json}", status=200)
+
     def post(self):
         data = request.get_json()
         job_id = data['job_id']
@@ -42,13 +47,17 @@ class JobCreatView(Resource):
 
 
 @api.route('/api/v1/jobs/<int:pk>')
-class JobUpdateDeleteView(Resource):
+class JobRetrieveUpdateDeleteView(Resource):
     """
     작성자: 윤상민
-
+    [GET] Retrieve Job
     [PUT] Update Job
     [DELETE] Delete Job
     """
+    def get(self, pk):
+        job_json = Job.objects(job_id=pk).to_json()
+        return Response(f"{job_json}", status=200)
+
     def put(self, pk):
         data = request.get_json()
         job = Job.objects(job_id=pk).first()
