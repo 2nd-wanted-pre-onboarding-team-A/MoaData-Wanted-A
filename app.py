@@ -22,7 +22,7 @@ class Job(Document):
 @api.route('/api/v1/jobs')
 class JobCreatView(Resource):
     """
-    Create, Update, Delete
+    [POST] Create Job
     """
     def post(self):
         data = request.get_json()
@@ -37,6 +37,10 @@ class JobCreatView(Resource):
 
 @api.route('/api/v1/jobs/<int:pk>')
 class JobUpdateDeleteView(Resource):
+    """
+    [PUT] Update Job
+    [DELETE] Delete Job
+    """
     def put(self, pk):
         data = request.get_json()
         job_id = data['job_id']
