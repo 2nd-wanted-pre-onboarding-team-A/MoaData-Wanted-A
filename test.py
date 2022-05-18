@@ -50,7 +50,7 @@ class JobCreatListView(TestCase):
         data = self.initial_data
         data['job_id'] = 110
         r = requests.post(self.url, json=data)
-        self.assertEqual(r.status_code, 201)
+        self.assertEqual(r.status_code, 200)
 
     def test_success_list(self):
         r = requests.get(self.url)
@@ -121,12 +121,12 @@ class JobRetriveUpdateDeleteView(TestCase):
         data['job_name'] = "new_job"
         none_url = 'http://127.0.0.1:5000/api/v1/jobs/5555'
         r = requests.put(none_url, json=data)
-        self.assertEqual(r.status_code, 404)
+        self.assertEqual(r.status_code, 403)
 
     def test_fail_delete(self):
         none_url = 'http://127.0.0.1:5000/api/v1/jobs/6666'
         r = requests.delete(none_url)
-        self.assertEqual(r.status_code, 404)
+        self.assertEqual(r.status_code, 403)
         
 
 class JobTaskView(TestCase):
