@@ -1,6 +1,6 @@
 # 첫 번째 Flask Server
 from flask import Flask # 서버 구현을 위한 Flask 객체 import
-from flask_restx import Api  # Api 구현을 위한 Api 객체 import
+from flask_restful import Api  # Api 구현을 위한 Api 객체 import
 from database.db import initialize_db
 from resources.routes import initialize_routes
 from resources.errors import errors
