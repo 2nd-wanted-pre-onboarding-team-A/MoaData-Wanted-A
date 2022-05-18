@@ -1,6 +1,6 @@
 from flask import request, Response  # 서버 구현을 위한 Flask 객체 import
 from database.model import Job
-from flask_restx import Resource
+from flask_restful import Resource
 from utils.executors import JobExecutor
 from mongoengine.errors import (
     NotUniqueError,
