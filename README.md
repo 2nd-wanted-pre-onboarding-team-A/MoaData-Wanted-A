@@ -31,9 +31,9 @@
 
 ## 기술스택
 
-<img src="https://img.shields.io/badge/python-3.8.10-green"><img src="https://img.shields.io/badge/flask-2.1.2-red"><img src="https://img.shields.io/badge/mongodb-5.0.7-black">
+<img src="https://img.shields.io/badge/python-3.8.10-green">  <img src="https://img.shields.io/badge/flask-2.1.2-red">   <img src="https://img.shields.io/badge/mongodb-5.0.7-black">
 
-<img src="https://img.shields.io/badge/pandas-1.4.2-blue"><img src="https://img.shields.io/badge/mongoengine-0.24.1-blue">
+<img src="https://img.shields.io/badge/pandas-1.4.2-blue">  <img src="https://img.shields.io/badge/mongoengine-0.24.1-blue">
 
 
 
@@ -57,7 +57,33 @@
 
 <img width="853" alt="Screen Shot 2022-05-17 at 14 30 07" src="https://user-images.githubusercontent.com/55699007/168735949-770e1b8e-c6a9-4c80-a569-aa05873d13b2.png">
 
+<br>
 
+### Job Save
+- `Tag: 1.0.0` : Client는 Job 정보를 Server에게 전송
+- `Tag: 1.1.0` : Server는 받은 정보를 job.json(mongodb)에 저장
+
+<br>
+
+### Job Delete
+- `Tag: 2.0.0` : Client는 특정 Job정보를 삭제하기 위해 job id를 서버로 전송
+- `Tag: 2.1.0` : Server는 받아온 job id에 해당하는 job 정보를 삭제
+
+<br>
+
+### Job Modify
+- `Tag: 3.0.0` : Client는 특정 Job정보를 수정하기 위해 job id를 서버로 전송
+- `Tag: 3.1.0` : Server는 받아온 job id에 해당하는 job 정보를 수정
+
+<br>
+
+### Job Run
+- `Tag: 4.0.0` : Client는 특정 Job을 실행하기 위해 job id를 서버로 전송
+- `Tag: 4.1.0` : Server는 받아온 job id에 해당하는 job list를 얻음
+  - `Tag: 4.1.1` : read task를 수행을 위해 특정 file에 접근
+  - `Tag: 4.1.2` : file의 값을 얻어 pandas의 DataFrame으로 전달
+- `Tag: 4.2.0` : 특정 column_name을 제외하여 DataFrame으로 전달
+- `Tag: 4.3.0` : 전달받은 데이터를 새로운 file로 저장 및 Client에게 전달
 
 <br>
 
@@ -139,7 +165,7 @@
 
   - Server 응답
 
-    ```
+    ```json
     [
     	{
     		"_id": {
