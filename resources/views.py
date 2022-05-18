@@ -14,6 +14,7 @@ from resources.errors import (
     JobNotExistsError
 )
 
+
 class JobCreatView(Resource):
     """
     writer: 윤상민
@@ -82,6 +83,7 @@ class JobRetrieveUpdateDeleteView(Resource):
             raise DeletingJobError
         except Exception as e:
             raise InternalServerError
+
 
 class JobTaskView(Resource):
     """

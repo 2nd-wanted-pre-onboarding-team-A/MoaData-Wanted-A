@@ -1,5 +1,6 @@
 from mongoengine import *
 
+
 class Job(Document):
     """
     몽고DB ORM
