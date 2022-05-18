@@ -1,25 +1,15 @@
 # 첫 번째 Flask Server
-from flask import Flask  # 서버 구현을 위한 Flask 객체 import
-from flask import request, Response
+from flask import Flask, request, Response  # 서버 구현을 위한 Flask 객체 import
 from flask_restx import Api, Resource  # Api 구현을 위한 Api 객체 import
-from mongoengine import *
+from database.db import initialize_db
+from database.model import Job
 
 from job import JobExecutor
 
 app = Flask(__name__)  # Flask 객체 선언, 파라미터로 어플리케이션 패키지의 이름을 넣어줌.
 api = Api(app)  # Flask 객체에 Api 객체 등록
-connect('moa')  # MongoDB Connector
 
-
-class Job(Document):
-    """
-    몽고DB ORM
-    """
-    job_id = IntField(required=True, unique=True)
-    job_name = StringField(required=True)
-    task_list = DictField()
-    property = DictField()
-
+initialize_db(app)
 
 @api.route('/api/v1/jobs')
 class JobCreatView(Resource):
