@@ -1,7 +1,7 @@
 from flask import request, Response  # 서버 구현을 위한 Flask 객체 import
 from database.model import Job
 from flask_restx import Resource
-from job import JobExecutor
+from utils.executors import JobExecutor
 from mongoengine.errors import (
     NotUniqueError,
     DoesNotExist, 
@@ -75,7 +75,7 @@ class JobRetrieveUpdateDeleteView(Resource):
 
     def delete(self, pk):
         try:
-            job = Job.objects.get(job_id=pk).to_json()
+            job = Job.objects.get(job_id=pk)
             job.delete()
             return Response(f"job_id={pk} deleted OK", status=200)
         except DoesNotExist:
@@ -91,7 +91,7 @@ class JobTaskView(Resource):
     """
     def get(self, pk):
         try:
-            job = Job.objects.get(job_id=pk).to_json()
+            job = Job.objects.get(job_id=pk)
             executor = JobExecutor()
             executor.run(job)
             return Response(f"job_id={pk} run task Success", status=200)
