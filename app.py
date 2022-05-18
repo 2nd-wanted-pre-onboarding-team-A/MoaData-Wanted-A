@@ -3,9 +3,10 @@ from flask import Flask # 서버 구현을 위한 Flask 객체 import
 from flask_restx import Api  # Api 구현을 위한 Api 객체 import
 from database.db import initialize_db
 from resources.routes import initialize_routes
+from resources.errors import errors
 
 app = Flask(__name__)  # Flask 객체 선언, 파라미터로 어플리케이션 패키지의 이름을 넣어줌.
-api = Api(app)  # Flask 객체에 Api 객체 등록
+api = Api(app, errors=errors)  # Flask 객체에 Api 객체 등록
 
 initialize_db(app)
 initialize_routes(api)

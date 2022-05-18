@@ -2,11 +2,23 @@ from flask import request, Response  # 서버 구현을 위한 Flask 객체 impo
 from database.model import Job
 from flask_restx import Resource
 from job import JobExecutor
+from mongoengine.errors import (
+    NotUniqueError,
+    DoesNotExist, 
+)
+from resources.errors import (
+    JobAlreadyExistsError,
+    InternalServerError,
+    UpdatingJobError,
+    DeletingJobError,
+    JobNotExistsError
+)
 
 class JobCreatView(Resource):
     """
-    작성자: 윤상민
-    
+    writer: 윤상민
+    refactor: 양수영
+
     [GET] List Jobs
     [POST] Create Job
     """
@@ -15,60 +27,75 @@ class JobCreatView(Resource):
         return Response(f"{jobs_json}", status=200)
 
     def post(self):
-        data = request.get_json()
-        job_id = data['job_id']
-        job = Job.objects(job_id=job_id).first()
-        job_last = Job.objects.order_by('-job_id').first()
-        if job is not None:
-            return Response(f"job_id={job_id} is exist. {job_last['job_id']+1} or higher is recommended", status=400)
         try:
+            data = request.get_json()
+            job_id = data['job_id']
+            job = Job.objects(job_id=job_id).first()
+            job_last = Job.objects.order_by('-job_id').first()
+
+            if job is not None:
+                return Response(f"job_id={job_id} is exist. {job_last['job_id']+1} or higher is recommended", status=400)
             Job(**data).save()
-        except:
-            return Response("Bad Request", status=400)
-        return Response(f"job_id={job_id} created OK", status=201)
+            return Response(f"job_id={job_id} created OK", status=200)
+            
+        except NotUniqueError:
+            raise JobAlreadyExistsError
+        except Exception as e:
+            raise InternalServerError
 
 
 class JobRetrieveUpdateDeleteView(Resource):
     """
-    작성자: 윤상민
+    writer: 윤상민
+    refactor: 양수영
 
     [GET] Retrieve Job
     [PUT] Update Job
     [DELETE] Delete Job
     """
     def get(self, pk):
-        job_json = Job.objects(job_id=pk).to_json()
-        return Response(f"{job_json}", status=200)
+        try:
+            job_json = Job.objects(job_id=pk).to_json()
+            return Response(f"{job_json}", status=200)
+        except DoesNotExist:
+            raise JobNotExistsError
+        except Exception as e:
+            raise InternalServerError
 
     def put(self, pk):
-        data = request.get_json()
-        job = Job.objects(job_id=pk).first()
-        if job is None:
-            return Response(f"Bad Request. job_id={pk} Not Found", status=404)
         try:
+            data = request.get_json()
+            job = Job.objects.get(job_id=pk)
             job.update(**data)
-        except:
-            return Response("Bad Request.", status=400)
-        return Response(f"job_id={pk} Updated OK", status=200)
+            return Response(f"job_id={pk} Updated OK", status=200)
+        except DoesNotExist:
+            raise UpdatingJobError
+        except Exception as e:
+            raise InternalServerError
 
     def delete(self, pk):
-        job = Job.objects(job_id=pk).first()
-        if job is None:
-            return Response(f"Bad Request. job_id={pk} Not Found", status=404)
-        job.delete()
-        return Response(f"job_id={pk} deleted OK")
-
+        try:
+            job = Job.objects.get(job_id=pk).to_json()
+            job.delete()
+            return Response(f"job_id={pk} deleted OK", status=200)
+        except DoesNotExist:
+            raise DeletingJobError
+        except Exception as e:
+            raise InternalServerError
 
 class JobTaskView(Resource):
     """
-    작성자: 양수영
+    writer: 양수영
     
     [GET] Run Job
     """
     def get(self, pk):
-        job = Job.objects(job_id=pk).first()
-        if job is None:
-            return Response(f"Bad Request. job_id={pk} Not Found", status=404)
-        executor = JobExecutor()
-        executor.run(job)
-        return Response(f"job_id={pk} run task Success", status=200)
+        try:
+            job = Job.objects.get(job_id=pk).to_json()
+            executor = JobExecutor()
+            executor.run(job)
+            return Response(f"job_id={pk} run task Success", status=200)
+        except DoesNotExist:
+            raise JobNotExistsError
+        except Exception as e:
+            raise InternalServerError
