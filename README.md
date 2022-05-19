@@ -149,6 +149,15 @@
     - task_list의 작업(예를들면 read -> drop -> write)이 진행된다. 
     - a.csv파일 수정의 결과값인 b.csv파일이 생성된다. 
 
+  - 존재하지 않는 id값으로 요청에 대한 server 응답
+    
+    ```json
+    {
+        "message": "Job with given id doesn't exists",
+        "status": 400
+    }
+    ```
+    
 <br>
 
 #### Job 저장 및 리스트 : `api/v1/jobs`
@@ -250,7 +259,7 @@
 
 #### Job 수정, 삭제 및 상세보기 `api/v1/jobs/<int:pk>`
 
-- `DELETE `  `/api/v1/jobs/1` 
+- `DELETE  `  `/api/v1/jobs/1` 
 
   - 요청 Body
 
@@ -263,12 +272,20 @@
     ```json
     "job_id=1 deleted OK"
     ```
+  
+  - 삭제 후 재요청에 대한 Server 응답
 
+    ```json
+    {
+        "message": "Deleting Job added by other is forbidden",
+        "status": 403
+    }
+    ```
 
 
 <br>
 
-- `PUT ` `/api/v1/jobs/1` 
+- `PUT  ` `/api/v1/jobs/1` 
 
   - 요청 Body
 
@@ -304,12 +321,19 @@
     ```json
     "job_id=1 Updated OK"
     ```
+  - 존재하지 않는 Job에 대한 put 요청 시 Server 응답
 
+    ```json
+    {
+        "message": "Updating Job added by other is forbidden",
+        "status": 403
+    }
+    ```
 
 
 <br>
 
-- `GET` `/api/v1/jobs/1` 
+- `GET  ` `/api/v1/jobs/1` 
 
   - 요청 Body
 
