@@ -12,6 +12,7 @@
 
 - [팀 구성](#팀구성)
 - [프로젝트 개요](#프로젝트-개요)
+- [프로젝트 구조](#프로젝트-구조)
 - [기술스택](#기술스택)
 - [프로젝트 진행과정](#프로젝트-진행과정)
 - [DFD](#-DFD)
@@ -36,7 +37,32 @@
 
 <br>
 
-## 기술스택
+## ✍️ 프로젝트 구조
+```bash
+❯ tree -N -L 2 -I "venv|.github|__pycache__"                                                                                                  ─╯
+.
+├── README.md
+├── app.py
+├── data
+│   ├── a.csv
+│   └── b.csv
+├── database
+│   ├── db.py
+│   └── model.py
+├── requirements.txt
+├── resources
+│   ├── errors.py
+│   ├── routes.py
+│   └── views.py
+├── test.py
+└── utils
+    └── executors.py
+
+4 directories, 12 files
+```
+
+
+## 🛠 기술스택
 
 <img src="https://img.shields.io/badge/python-3.8.10-green">  <img src="https://img.shields.io/badge/flask-2.1.2-red">   <img src="https://img.shields.io/badge/mongodb-5.0.7-black">
 
