@@ -97,6 +97,8 @@ class JobTaskView(Resource):
             executor = JobExecutor()
             executor.run(job)
             return Response(f"job_id={pk} run task Success", status=200)
+        except ValueError as e:
+            return Response(f"message: {e}", status=400)
         except DoesNotExist:
             raise JobNotExistsError
         except Exception as e:
