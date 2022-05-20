@@ -1,5 +1,3 @@
-#~/movie-bag/resources/errors.py
-
 class InternalServerError(Exception):
     pass
 

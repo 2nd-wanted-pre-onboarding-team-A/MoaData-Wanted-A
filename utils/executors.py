@@ -1,18 +1,20 @@
 import json
 import pandas as pd
+import collections
+from utils.topology_sort import topology_sort
 
 class JobExecutor:
     def run(self, job_info):
 
-        task_list = job_info['task_list']
+        task_list= job_info['task_list']
         
+        task_queue = collections.deque(topology_sort(task_list))
         task_excutor = TaskExecutor()
 
-        for task in task_list.keys():
-            # WRAN
-            print("Run Task:", task)
-            task_fucntion = getattr(task_excutor, task.lower())
-            task_fucntion(job_info)
+        while task_queue:
+            task = task_queue.popleft()
+            task_func = getattr(task_excutor, task.lower())
+            task_func(job_info)
 
 
 class TaskExecutor:
